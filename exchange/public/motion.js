@@ -18,7 +18,7 @@
  document.addEventListener('click',e=>{const target=e.target instanceof Element?e.target:null;const skip=target?.closest('a.skip');if(skip){const main=document.querySelector('main');if(main){e.preventDefault();main.setAttribute('tabindex','-1');main.focus({preventScroll:true});main.scrollIntoView({block:'start',behavior:'auto'})}}for(const m of document.querySelectorAll('.header-menu[open]'))if(!m.contains(target)||target?.closest('.header-menu-list a'))m.open=false});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'){for(const m of document.querySelectorAll('.header-menu[open]')){m.open=false;m.querySelector('summary')?.focus()}}});
  scan();
- const recovery=document.getElementById('load-recovery');if(recovery){setTimeout(()=>{if(document.querySelector('#root .app-skeleton'))recovery.hidden=false},8000)}
+ const recovery=document.getElementById('load-recovery');if(recovery){const root=document.getElementById('root');const sync=()=>{if(!root?.querySelector('.app-skeleton'))recovery.hidden=true};if(root&&typeof MutationObserver==='function')new MutationObserver(sync).observe(root,{childList:true,subtree:true});setTimeout(()=>{recovery.hidden=!root?.querySelector('.app-skeleton')},8000)}
  const banner=document.createElement('div');banner.className='connection-banner';banner.setAttribute('role','status');banner.hidden=true;document.body.append(banner);
  function connection(){banner.hidden=navigator.onLine;banner.textContent=navigator.onLine?'':'Offline — cached educational content may be available. Market data requires a connection.'}
  window.addEventListener('offline',connection);window.addEventListener('online',connection);connection();
