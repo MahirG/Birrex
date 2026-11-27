@@ -1,4 +1,4 @@
-'use strict';const VERSION='0.9.3',CACHE='birrex-'+VERSION;
+'use strict';const VERSION='0.9.4',CACHE='birrex-'+VERSION;
 const PAGES=['/','/ledger-lab','/readiness','/p2p-lab'];
 const STATIC=['/styles.css','/app.js','/motion.js','/vendor/react.js','/vendor/react-dom.js','/icon.svg','/icon-192.svg','/ledger-lab.js','/p2p-lab.js','/market-insights.js','/status.js'];
 const versioned=p=>p+'?v='+VERSION;

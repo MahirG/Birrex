@@ -1,0 +1,2 @@
+# 0.9.4 Intelligence Edition
+Searchable five-asset catalog independent of quote availability; local watchlist shared with demo workspace; three-asset informational comparison; category filtering and fixed-journal portfolio allocation analytics. Unavailable prices remain blank. No AI recommendations or actual financial operations. No new paid services. Actual upstream quotes and browser acceptance remain unverified.

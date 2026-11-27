@@ -3,3 +3,4 @@ await import('./test-p2p.mjs');
 await import('./test-ledger.mjs');
 await import('./test-motion.mjs');
 await import('./test-performance.mjs');
+await import('./test-intelligence.mjs');
