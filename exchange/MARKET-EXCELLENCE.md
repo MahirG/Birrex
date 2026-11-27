@@ -1,0 +1,2 @@
+# Genesis RC7 — Market Excellence
+Institutional footer with three navigable groups, provider attribution, regulator link, explicit demo risk disclosure, release status and back-to-top. No fabricated company contacts, legal policy pages or regulatory approvals. Localized SPA footer, English static modules. Asset detail watchlist control, direct asset link, dedicated watchlist entry and responsive selected-asset scroll. Native-speaker review and visual/browser acceptance remain pending.

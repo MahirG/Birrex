@@ -15,3 +15,4 @@ await import('./test-header.mjs');
 await import('./test-pure.mjs');
 await import('./test-controls.mjs');
 await import('./test-precision.mjs');
+await import('./test-market-excellence.mjs');
