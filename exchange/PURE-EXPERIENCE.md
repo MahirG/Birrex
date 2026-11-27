@@ -1,0 +1,2 @@
+# Genesis RC4 — Pure Experience
+Flatter editorial hierarchy and lightweight separators; retain a focal portfolio surface and safety callouts. Five-icon mobile dock with accessible names and active state, matching dock on public modules. Buy/Sell simulation controls use distinct contrast-conscious green/red fills and explicit localized demo labels. Compact footer. No executable trading, payments or custody changes. Browser and physical-device acceptance still required.
