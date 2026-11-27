@@ -1,0 +1,2 @@
+# Genesis 1.0.0-rc.2
+Shared responsive typography and spacing tokens, device-native Ethiopic font fallback, tabular financial numerals, consistent SVG actions and navigation, keyboard focus and 44px targets. New safety banner translations require native-speaker review. D1 refresh lease uses atomic UPDATE and meta.changes; actual live provider response remains unverified. No additional dependencies or paid subscriptions. Stable release pending browser, CI, language and security acceptance.
