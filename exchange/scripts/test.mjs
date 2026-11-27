@@ -2,3 +2,4 @@ import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';imp
 await import('./test-p2p.mjs');
 await import('./test-ledger.mjs');
 await import('./test-motion.mjs');
+await import('./test-performance.mjs');

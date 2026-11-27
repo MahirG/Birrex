@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS market_diagnostics (id INTEGER PRIMARY KEY CHECK(id=1), outcome TEXT NOT NULL DEFAULT 'not_checked', checked_at INTEGER NOT NULL DEFAULT 0); INSERT OR IGNORE INTO market_diagnostics(id) VALUES(1);
