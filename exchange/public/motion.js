@@ -1,7 +1,7 @@
 'use strict';
 (function(){
  const reduce=typeof matchMedia==='function'?matchMedia('(prefers-reduced-motion: reduce)'):null;
- const reduced=()=>reduce?.matches||document.documentElement.dataset.motion==='reduced';
+ const reduced=()=>reduce?.matches||document.documentElement.dataset.motion==='reduced'||document.documentElement.dataset.lite==='yes';
  const seen=new WeakSet();let observer=null,queued=false,progress=null,header=null,resize=null,raf=0,maxScroll=0;const animations=new Set();
  const clampProgress=(top,scrollHeight,viewport)=>Math.min(1,Math.max(0,scrollHeight>viewport?top/(scrollHeight-viewport):0));
  const measure=()=>{maxScroll=Math.max(0,document.documentElement.scrollHeight-window.innerHeight);onScroll()};const syncProgress=()=>{raf=0;if(progress)progress.value=maxScroll?Math.min(1,Math.max(0,(window.scrollY||0)/maxScroll)):0};
@@ -10,7 +10,7 @@
  function scan(){queued=false;const current=document.querySelector('.top');if(current!==header){if(resize&&header)resize.unobserve(header);header=current;if(header){progress=header.querySelector('.scroll-progress');if(!progress){progress=document.createElement('progress');progress.className='scroll-progress';progress.max=1;progress.value=0;progress.setAttribute('aria-hidden','true');header.append(progress)}if(resize)resize.observe(header)}else progress=null}
  if(observer&&!reduced()){for(const el of document.querySelectorAll('main > .welcome, main > .panel, main > .grid > .panel, main > .institution-metrics > .panel, main > .lessons > .panel'))if(!seen.has(el))observer.observe(el)}measure()}
  function queue(){if(!queued){queued=true;requestAnimationFrame(scan)}}
- function begin(){if(typeof IntersectionObserver==='function'){observer=new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting){observer.unobserve(e.target);reveal(e.target)}},{threshold:.05,rootMargin:'0px 0px -8px 0px'})}
+ function begin(){try{document.documentElement.dataset.lite=localStorage.getItem('birrex.lite')==='yes'?'yes':'no';document.documentElement.dataset.motion=localStorage.getItem('birrex.motion')==='reduced'?'reduced':'normal'}catch{}if(typeof IntersectionObserver==='function'){observer=new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting){observer.unobserve(e.target);reveal(e.target)}},{threshold:.05,rootMargin:'0px 0px -8px 0px'})}
  if(typeof ResizeObserver==='function')resize=new ResizeObserver(measure);if(resize)resize.observe(document.documentElement);
  if(typeof MutationObserver==='function')new MutationObserver(records=>{if(records.some(r=>[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&(n.matches?.('main,.top,.panel,.welcome,.grid,.lessons,.institution-metrics')||n.querySelector?.('.panel,.top,main')))))queue()}).observe(document.body,{childList:true,subtree:true});
  window.addEventListener('scroll',onScroll,{passive:true});window.addEventListener('resize',measure,{passive:true});
@@ -18,6 +18,7 @@
  document.addEventListener('click',e=>{const target=e.target instanceof Element?e.target:null;const skip=target?.closest('a.skip');if(skip){const main=document.querySelector('main');if(main){e.preventDefault();main.setAttribute('tabindex','-1');main.focus({preventScroll:true});main.scrollIntoView({block:'start',behavior:'auto'})}}for(const m of document.querySelectorAll('.header-menu[open]'))if(!m.contains(target)||target?.closest('.header-menu-list a'))m.open=false});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'){for(const m of document.querySelectorAll('.header-menu[open]')){m.open=false;m.querySelector('summary')?.focus()}}});
  scan();
+ const recovery=document.getElementById('load-recovery');if(recovery){setTimeout(()=>{if(document.querySelector('#root .app-skeleton'))recovery.hidden=false},8000)}
  const banner=document.createElement('div');banner.className='connection-banner';banner.setAttribute('role','status');banner.hidden=true;document.body.append(banner);
  function connection(){banner.hidden=navigator.onLine;banner.textContent=navigator.onLine?'':'Offline — cached educational content may be available. Market data requires a connection.'}
  window.addEventListener('offline',connection);window.addEventListener('online',connection);connection();

@@ -5,3 +5,4 @@ await import('./test-motion.mjs');
 await import('./test-performance.mjs');
 await import('./test-intelligence.mjs');
 await import('./test-experience.mjs');
+await import('./test-platinum.mjs');
