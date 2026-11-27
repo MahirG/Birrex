@@ -1,14 +1,3 @@
-# 0.3.0 Identity & Security — infrastructure checkpoint
-
-An isolated Cloudflare D1 database named birrex-identity has been provisioned and the migration applied. The database is not bound to the production Worker. No user registration, authentication, credential handling, or real transactions have been enabled.
-
-The initial schema is provisional; select a managed identity provider before exposing it. If managed identity is selected, replace credential/session tables with provider subject IDs and application-specific profiles, preferences and audit events. Do not reuse authentication or data from unrelated applications.
-
-Release gates:
-- Managed authentication with verified sessions and secure recovery.
-- Server-side authorization and least-privilege administrative roles.
-- MFA/passkey support, session revocation, rate limits, bot controls and privacy review.
-- Integration tests, browser tests and independent security review.
-- Explicit regulatory authorization before enabling real financial activity.
-
-Current production remains 0.2.0. The account infrastructure checkpoint is not a public 0.3.0 release.
+# BirrEX 0.3.0 — managed identity private beta
+Cloudflare Access application: BirrEX Private Beta, owner-only, 8-hour session. Path /private-beta. JWT signature, issuer, audience and timestamps are verified at the Worker. Only opaque Access subject plus locale/theme preferences are persisted in D1. No custom credential collection. Public workspace remains simulation-only; public registration, passkeys and MFA are not implemented. Managed login flow requires real browser verification.
+Market Insights at /market-insights has a fixed CoinMarketCap read-only adapter. It returns unavailable until the operator adds the CMC_API_KEY Worker secret under an appropriate licensed plan. No fake live prices. Source: https://coinmarketcap.com/api/pricing/. No paid service activated. The account path and market route are excluded from offline navigation fallback. The GitHub deploy script preserves secrets and the identity database binding.

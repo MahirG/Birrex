@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS beta_preferences (subject TEXT PRIMARY KEY, locale TEXT NOT NULL DEFAULT 'en' CHECK(locale IN ('en','am','om')), theme TEXT NOT NULL DEFAULT 'dark' CHECK(theme IN ('dark','light')), updated_at INTEGER NOT NULL);
