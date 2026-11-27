@@ -1,0 +1,31 @@
+name: BirrEX build and deploy
+on:
+  push:
+    branches: [birrex-signature-edition]
+    paths: ['exchange/**', '.github/workflows/birrex.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: birrex-cloudflare-release
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node exchange/scripts/build.mjs
+      - run: node exchange/scripts/test.mjs
+      - name: Publish after verification when credentials are configured
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "Cloudflare secrets missing: deployment skipped."
+          else
+            node exchange/scripts/deploy.mjs
+          fi
