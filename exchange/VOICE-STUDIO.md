@@ -1,0 +1,6 @@
+# BirrEX Voice Studio — local upstream connector
+This integration uses the actual VoiceStudio OpenAI-compatible API, not a copied AI engine. Upstream https://github.com/debpalash/VoiceStudio (AGPL-3.0); no upstream source is modified or bundled. Review upstream/model license and commercial use requirements independently.
+1. Install upstream using https://voicestudio.sh/ on a supported computer (upstream documents 8 GB RAM and 10 GB disk minimum). Start its local backend on 127.0.0.1:3900.
+2. Clone the BirrEX branch and install Node.js 22. From the repository root run `node exchange/scripts/voice-bridge.mjs`.
+3. Open http://127.0.0.1:3910/voice-studio on that same computer. Generate English narration using the upstream default voice. Browser preview is separate and uses browser/OS voices; Amharic and Afaan Oromo require actual engine/device validation.
+Bridge is loopback-only, checks Host and Origin, uses a fixed upstream and two allowlisted API paths, rejects cross-origin POSTs, bounds requests/audio/concurrency, and never stores scripts or tokens. Do not expose either port publicly. No remote compute, AI cloning, or video dubbing is provisioned. A mobile-accessible hosted service needs separately approved compute and access controls. Run `node exchange/scripts/test-voice.mjs` for mocked API checks. Actual provider inference remains unverified.

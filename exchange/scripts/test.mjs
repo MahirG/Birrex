@@ -18,3 +18,4 @@ await import('./test-precision.mjs');
 await import('./test-market-excellence.mjs');
 await import('./test-seamless.mjs');
 await import('./test-ultimate.mjs');
+await import('./test-voice.mjs');
