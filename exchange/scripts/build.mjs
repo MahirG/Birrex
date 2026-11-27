@@ -1,0 +1,1 @@
+import {readFileSync,writeFileSync} from 'node:fs';import {stripTypeScriptTypes} from 'node:module';const src=readFileSync(new URL('../src/app.ts',import.meta.url),'utf8');writeFileSync(new URL('../public/app.js',import.meta.url),stripTypeScriptTypes(src,{mode:'strip'}));console.log('Built app.js');

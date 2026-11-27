@@ -1,0 +1,6 @@
+# BirrEX 0.2.0 — Exchange Foundation
+React 18.3.1, typed TypeScript source and native CSS. Vendored React UMD bundles from cdnjs with MIT license. All data fictional; no financial services, real orders, deposits, withdrawals or wallet addresses.
+
+Build: Node 22.16+ `node exchange/scripts/build.mjs` (type stripping, not full type checking). Test: `node exchange/scripts/test.mjs`. Preview: `python3 -m http.server 8080 --directory exchange/public`. PWA uses same-origin service worker. Language framework supports English, Amharic and Afaan Oromo navigation and core labels; explanatory copy remains English pending translation review. Theme and watchlist persist locally; activity is session-only.
+
+Deploy: set CLOUDFLARE_API_TOKEN (Workers Scripts Write scoped to account) and CLOUDFLARE_ACCOUNT_ID as secure secrets, then run `node exchange/scripts/deploy.mjs` to update birrex-signature. No additional paid resources. Browser/device visual acceptance and PWA installation checks remain outstanding.
