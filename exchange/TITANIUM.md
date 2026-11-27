@@ -1,0 +1,2 @@
+# 0.9.8 Titanium Edition
+Responsive terminal with balanced, chart-focus and asset-focus layouts. 1h, 6h, 24h and 7d observed-price ranges; USD and normalized change chart modes; deduplicated observations, range high/low/change and count; educational asset profiles and direct asset hash links. No fabricated market observations, financial execution or paid dependencies. Existing 30-minute scheduled refresh preserved. Real browser and provider acceptance remain outstanding.
