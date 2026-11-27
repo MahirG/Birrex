@@ -1,0 +1,2 @@
+# Genesis RC5 — Visual Harmony
+Separate empty trade and P2P amount drafts; strict decimal validation, decimal keyboard, unit suffix, stable inline estimate, compact review buttons, disabled invalid trade review, labeled search fields and clear controls, route focus correction, compact mobile keyboard-aware dock. Search storage writes deferred to change/refresh. Chart cursor follows normalized values. No real trading or financial operations. Actual mobile keyboard and browser performance measurements remain pending.

@@ -17,6 +17,12 @@
  const change=()=>{if(reduced()){for(const a of animations)a.cancel();observer?.disconnect()}else queue()};window.addEventListener('birrex-motion',change);if(reduce?.addEventListener)reduce.addEventListener('change',change);else if(reduce?.addListener)reduce.addListener(change);
  document.addEventListener('click',e=>{const target=e.target instanceof Element?e.target:null;const skip=target?.closest('a.skip');if(skip){const main=document.querySelector('main');if(main){e.preventDefault();main.setAttribute('tabindex','-1');main.focus({preventScroll:true});main.scrollIntoView({block:'start',behavior:'auto'})}}for(const m of document.querySelectorAll('.header-menu[open]'))if(!m.contains(target)||target?.closest('.header-menu-list a'))m.open=false});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'){for(const m of document.querySelectorAll('.header-menu[open]')){m.open=false;m.querySelector('summary')?.focus()}}});
+
+ const vv=window.visualViewport;let keyboardFrame=0;
+ const isEditing=el=>!!el&&(el.matches?.('textarea,[contenteditable="true"],input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit]):not([type=range]):not([type=hidden])'));
+ const updateKeyboard=()=>{keyboardFrame=0;const editing=isEditing(document.activeElement);const open=vv?editing&&Math.abs((vv.scale||1)-1)<.05&&window.innerHeight-vv.height>140:editing&&window.innerWidth<=760;document.documentElement.dataset.keyboardOpen=open?'yes':'no'};
+ const queueKeyboard=()=>{if(!keyboardFrame)keyboardFrame=requestAnimationFrame(updateKeyboard)};
+ document.addEventListener('focusin',queueKeyboard);document.addEventListener('focusout',queueKeyboard);vv?.addEventListener('resize',queueKeyboard,{passive:true});window.addEventListener('resize',queueKeyboard,{passive:true});queueKeyboard();
  scan();
  const recovery=document.getElementById('load-recovery');if(recovery){const root=document.getElementById('root');const sync=()=>{if(!root?.querySelector('.app-skeleton'))recovery.hidden=true};if(root&&typeof MutationObserver==='function')new MutationObserver(sync).observe(root,{childList:true,subtree:true});setTimeout(()=>{recovery.hidden=!root?.querySelector('.app-skeleton')},8000)}
  const banner=document.createElement('div');banner.className='connection-banner';banner.setAttribute('role','status');banner.hidden=true;document.body.append(banner);

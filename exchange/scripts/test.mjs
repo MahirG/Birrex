@@ -13,3 +13,4 @@ await import('./test-genesis.mjs');
 await import('./test-signature.mjs');
 await import('./test-header.mjs');
 await import('./test-pure.mjs');
+await import('./test-controls.mjs');
