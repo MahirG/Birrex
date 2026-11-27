@@ -6,3 +6,4 @@ await import('./test-performance.mjs');
 await import('./test-intelligence.mjs');
 await import('./test-experience.mjs');
 await import('./test-platinum.mjs');
+await import('./test-diamond.mjs');
