@@ -1,2 +1,8 @@
 # Genesis 1.0.0-rc.1
 Release candidate, not stable 1.0 or an authorized exchange. Fix dashboard health request lifecycle (clear timeout on success and failure; cancel on unmount), show release channel and aggregate refresh metadata, validate cached quotes and provider timestamps, fix stale loading recovery and align document title. Financial activity remains disabled. Previous Sovereign homepage observed in an existing browser tab; candidate browser acceptance, physical devices, provider success, translation review and independent security assessment remain outstanding. No new paid service. Rollback to Worker version 724d730c-3815-4477-9ec8-d29db9f561fa if acceptance fails.
+
+## RC9 acceptance evidence — 2026-11-28 (EAT)
+- Active Worker version 1c762d4c-50e2-4afa-ab50-a9eb7987d5bc at 100% traffic. Base commit 40e27dc268578076ceb90750e9b54d787bd5b45e.
+- D1 read-only verification: CoinMarketCap refresh succeeded at 2026-11-27 21:15:57 UTC. Five positive provider quotes (BTC, ETH, USDT, SOL, BNB), timestamp 21:15:04 UTC, two observations per asset. Cron */30 * * * * configured. Successful retrieval is not a perpetual availability guarantee.
+- Browser acceptance gate added for Chromium, Firefox and WebKit at 320, 390 and 1280 CSS pixels, actual Worker code with isolated synthetic data. Checks navigation, overflow, languages, status fixture and blocked endpoints. Execution pending. Physical Android/iOS, public endpoint, full translation review and independent security assessment remain outstanding. Deployment gated by browser tests and restricted to release branch, never PR.
+- No real financial operations or paid service enabled.
