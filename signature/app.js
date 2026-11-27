@@ -1,0 +1,10 @@
+'use strict';
+const $=id=>document.getElementById(id);
+const rates={USD:128.45,USDT:128.12};
+function quote(){const amount=$('amount').valueAsNumber,currency=$('currency').value,rate=rates[currency];$('result').textContent=Number.isFinite(amount)&&amount>=0?(amount/rate).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'—';$('rate').textContent=rate.toFixed(2)+' ETB / '+currency}
+$('amount').addEventListener('input',quote);$('currency').addEventListener('change',quote);
+const offers=[['Example A','USD','Telebirr',128.45,127.80,'1,000–25,000'],['Example B','USD','CBE',128.60,127.95,'5,000–100,000'],['Example C','USD','M-PESA',128.75,128.05,'500–15,000'],['Example D','USDT','Telebirr',128.12,127.50,'1,000–50,000'],['Example E','USDT','CBE',128.30,127.65,'5,000–75,000'],['Example F','USDT','M-PESA',128.40,127.70,'500–20,000']];
+let direction='buy';
+function render(){const body=$('offers');body.replaceChildren();const asset=$('asset').value,payment=$('payment').value;const filtered=offers.filter(o=>o[1]===asset&&(payment==='All methods'||o[2]===payment)).sort((a,b)=>direction==='buy'?a[3]-b[3]:b[4]-a[4]);$('empty').hidden=filtered.length>0;for(const o of filtered){const tr=document.createElement('tr');const price=o[direction==='buy'?3:4].toFixed(2);for(const value of [o[0],price,o[2],o[5]]){const td=document.createElement('td');td.textContent=value;tr.append(td)}const td=document.createElement('td'),button=document.createElement('button');button.textContent='View';button.setAttribute('aria-label','View '+o[0]);button.addEventListener('click',()=>{$('detailText').textContent=direction.toUpperCase()+' '+asset+' · '+price+' ETB · '+o[2]+' · Limit '+o[5]+' ETB';$('detail').showModal()});td.append(button);tr.append(td);body.append(tr)}}
+for(const id of ['buy','sell']){$(id).addEventListener('click',()=>{direction=id;for(const side of ['buy','sell'])$(side).setAttribute('aria-pressed',String(side===id));render()})}
+for(const id of ['asset','payment'])$(id).addEventListener('change',render);quote();render();
