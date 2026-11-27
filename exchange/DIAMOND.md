@@ -1,0 +1,2 @@
+# 0.9.7 Diamond Edition
+Local browser navigation timings, customizable service health widget, translated new labels, responsive typography and accessible horizontally scrollable tables, improved chart pointer interactions, scheduled market refresh handler reusing the existing 15-minute D1 lease. Configure at most one Worker cron (every 30 minutes) under current plan limits. No new paid service. Browser acceptance, measured cross-device benchmarks and real provider response remain to be verified.

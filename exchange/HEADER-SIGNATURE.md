@@ -1,0 +1,2 @@
+# Genesis RC3
+Brand and three top-level icon controls: search, notifications, menu. Language, theme, install and navigation remain in the SPA menu. Static modules and private workspace share the icon header. 44px targets, accessible labels, safe-area padding and responsive layout. Actual visual/device acceptance pending.

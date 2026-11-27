@@ -1,0 +1,2 @@
+# Genesis RC6 — Precision Detail
+Localized editorial hero, functional inline universal search with ranked suggestions, asset deep links, feed status from existing status API, original SVG asset pictograms (not official logo artwork), refined market tables and chart cursor, explicitly illustrative portfolio chart. No new dependencies or paid services. Browser/device acceptance and translation review pending.

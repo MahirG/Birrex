@@ -1,0 +1,22 @@
+# Official upstream private host deployment; start only on an approved, adequate computer.
+services:
+  voicestudio:
+    image: ghcr.io/debpalash/voicestudio:0.5.6
+    restart: unless-stopped
+    environment:
+      OMNIVOICE_API_KEY: ${OMNIVOICE_API_KEY:?set a long random key outside source control}
+      OMNIVOICE_DATA_DIR: /app/omnivoice_data
+    ports:
+      - "127.0.0.1:3900:3900"
+    volumes:
+      - voicestudio-data:/app/omnivoice_data
+      - voicestudio-models:/app/omnivoice_data/huggingface
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:3900/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 120s
+volumes:
+  voicestudio-data:
+  voicestudio-models:

@@ -1,0 +1,2 @@
+# BirrEX Platinum 0.9.6
+Interactive demo allocation ring and sample-journal balance timeline; optional masking of illustrative portfolio balances; lightweight appearance mode; vector icons in main header; mobile layout and focus refinements; delayed loading recovery links. No new dependencies, subscriptions or financial capabilities. Browser screenshots, comprehensive visual audit and physical-device acceptance remain pending.

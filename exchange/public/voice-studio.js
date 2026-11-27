@@ -1,0 +1,18 @@
+'use strict';
+const $=id=>document.getElementById(id);
+const script=$('script'),message=$('message'),gen=$('generate'),audio=$('audio');
+const local=location.protocol==='http:'&&location.hostname==='127.0.0.1'&&location.port==='3910';
+let controller=null,objectUrl=null,utterance=null,ready=false;
+const tell=t=>{message.textContent=t};
+const count=()=>{$('count').textContent=script.value.length+' / 2000'};
+script.addEventListener('input',count);
+$('example').onclick=()=>{script.value='Welcome to BirrEX Academy. Market prices fluctuate, and historical data does not predict future returns. This educational workspace does not execute transactions.';$('language').value='en';count()};
+const valid=()=>script.value.trim().length>0&&script.value.length<=2000;
+const clearAudio=()=>{audio.pause();audio.removeAttribute('src');audio.load();$('save').removeAttribute('href');$('output').hidden=true;if(objectUrl)URL.revokeObjectURL(objectUrl);objectUrl=null};
+$('preview').disabled=!('speechSynthesis' in window&&'SpeechSynthesisUtterance' in window);
+$('preview').onclick=()=>{if(!valid())return tell('Enter a script first.');if(!('speechSynthesis' in window))return tell('Browser voices are unavailable.');const lang=$('language').value;const voice=speechSynthesis.getVoices().find(v=>v.lang.toLowerCase().split('-')[0]===lang);if(!voice)return tell('No browser voice for this language is installed.');speechSynthesis.cancel();utterance=new SpeechSynthesisUtterance(script.value.trim());utterance.voice=voice;utterance.lang=voice.lang;utterance.rate=Number($('speed').value);utterance.onend=()=>tell('Browser preview finished.');utterance.onerror=()=>tell('Browser preview interrupted or unavailable.');speechSynthesis.speak(utterance);tell('Playing browser voice, not VoiceStudio.')};
+$('stop').onclick=()=>{if('speechSynthesis' in window)speechSynthesis.cancel();controller?.abort();audio.pause();tell('Stopped.')};
+async function check(){if(!local){$('engine').textContent='Local engine required';return}try{const r=await fetch('/engine/status',{cache:'no-store',signal:AbortSignal.timeout(4000)});ready=r.ok&&(await r.json()).available===true}catch{ready=false}$('engine').textContent=ready?'VoiceStudio connected':'Engine not reachable';gen.disabled=!ready}
+gen.onclick=async()=>{if(!local||!ready||controller)return;if(!valid())return tell('Enter a script first.');if($('language').value!=='en')return tell('This initial connector is verified for English input only. Other languages need engine validation.');clearAudio();controller=new AbortController();gen.disabled=true;tell('Generating with your local VoiceStudio engine…');try{const r=await fetch('/engine/speech',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({input:script.value.trim(),speed:Number($('speed').value)}),signal:controller.signal});if(!r.ok)throw Error('engine rejected');const blob=await r.blob();if(!blob.size||!blob.type.startsWith('audio/'))throw Error('invalid audio');objectUrl=URL.createObjectURL(blob);audio.src=objectUrl;$('save').href=objectUrl;$('output').hidden=false;tell('VoiceStudio audio is ready.')}catch(e){tell(e.name==='AbortError'?'Generation cancelled.':'Generation failed. Check the local engine and try again.')}finally{controller=null;gen.disabled=!ready}};
+window.addEventListener('pagehide',()=>{controller?.abort();if('speechSynthesis' in window)speechSynthesis.cancel();if(objectUrl)URL.revokeObjectURL(objectUrl)});
+check();

@@ -1,0 +1,37 @@
+'use strict';
+// Educational accounting dataset: integer USD cents, not customer assets.
+const ACCOUNTS=Object.freeze({cash:'Virtual cash',btc:'Bitcoin practice allocation',eth:'Ethereum practice allocation',reserve:'Practice reserve',capital:'Sample capital',expense:'Practice expenses'});
+const JOURNAL=Object.freeze([
+ {id:'LAB-001',date:'2026-11-01',memo:'Opening fictional capital',lines:[['cash',1000000],['capital',-1000000]]},
+ {id:'LAB-002',date:'2026-11-03',memo:'Sample BTC allocation',lines:[['btc',300000],['cash',-300000]]},
+ {id:'LAB-003',date:'2026-11-04',memo:'Sample ETH allocation',lines:[['eth',200000],['cash',-200000]]},
+ {id:'LAB-004',date:'2026-11-05',memo:'Sample reserve allocation',lines:[['reserve',100000],['cash',-100000]]},
+ {id:'LAB-005',date:'2026-11-06',memo:'Illustrative operating expense',lines:[['expense',1250],['cash',-1250]]}
+]);
+function reconcile(entries){
+ const balances=Object.fromEntries(Object.keys(ACCOUNTS).map(a=>[a,0]));const ids=new Set();const errors=[];
+ for(const e of entries){if(!e||typeof e.id!=='string'||ids.has(e.id)||!Array.isArray(e.lines)||e.lines.length<2){errors.push('Invalid or duplicate journal');continue}ids.add(e.id);
+ let total=0,valid=true,positive=false,negative=false;
+ for(const line of e.lines){if(!Array.isArray(line)||line.length!==2||!Object.hasOwn(ACCOUNTS,line[0])||!Number.isSafeInteger(line[1])||line[1]===0){valid=false;break}total+=line[1];positive||=line[1]>0;negative||=line[1]<0;if(!Number.isSafeInteger(total)){valid=false;break}}
+ if(!valid||!positive||!negative||total!==0){errors.push(e.id+': invalid or unbalanced');continue}
+ const next={...balances};for(const [a,v] of e.lines)next[a]+=v;if(Object.values(next).some(v=>!Number.isSafeInteger(v))){errors.push(e.id+': overflow');continue}Object.assign(balances,next)}
+ const debit=Object.values(balances).reduce((s,v)=>s+Math.max(0,v),0),credit=Object.values(balances).reduce((s,v)=>s+Math.max(0,-v),0);
+ return {ok:errors.length===0&&debit===credit,errors,balances,debit,credit,netAssets:balances.cash+balances.btc+balances.eth+balances.reserve};
+}
+const money=v=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(v/100);
+function filteredJournal(q,account){const term=String(q||'').trim().toLowerCase();return JOURNAL.filter(e=>(e.id+' '+e.memo+' '+e.date).toLowerCase().includes(term)&&(account==='all'||e.lines.some(l=>l[0]===account)))}
+function csvStatement(entries){const escape=v=>'"'+String(v).replace(/"/g,'""')+'"';return ['DEMO ONLY,NOT A FINANCIAL STATEMENT','Journal,Date,Description,Account,Debit USD,Credit USD',...entries.flatMap(e=>e.lines.map(([a,v])=>[e.id,e.date,e.memo,ACCOUNTS[a],(Math.max(0,v)/100).toFixed(2),(Math.max(0,-v)/100).toFixed(2)].map(escape).join(',')))].join('\r\n')}
+function portfolioAnalytics(result){const keys=['cash','btc','eth','reserve'],total=result.netAssets;const weights=keys.map(a=>({account:a,weight:total>0?result.balances[a]/total*100:0}));return {weights,largest:weights.reduce((a,b)=>a.weight>=b.weight?a:b),change:(total-1000000)/1000000*100,expense:result.balances.expense,concentration:weights.reduce((sum,a)=>sum+(a.weight/100)**2,0)}}
+function journalTimeline(entries){return entries.map((e,i)=>({date:e.date,id:e.id,value:reconcile(entries.slice(0,i+1)).netAssets}))}
+function timelineCoordinates(points){if(!points.length)return [];const values=points.map(p=>p.value);const max=Math.max(...values),min=Math.min(...values),span=Math.max(1,max-min);return points.map((p,i)=>({...p,x:20+i*560/Math.max(1,points.length-1),y:130-(p.value-min)*105/span}))}
+function renderTimeline(){const points=timelineCoordinates(journalTimeline(JOURNAL)),svg=document.getElementById('journal-chart'),detail=document.getElementById('journal-chart-detail'),controls=document.getElementById('journal-chart-controls');const element=(tag,attrs)=>{const n=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,String(v));return n};svg.replaceChildren();controls.replaceChildren();svg.append(element('path',{d:'M20 25H580M20 78H580M20 130H580',stroke:'currentColor',opacity:.18,'stroke-dasharray':'4 5'}),element('polyline',{points:points.map(p=>p.x+','+p.y).join(' '),fill:'none',stroke:'#e6c58f','stroke-width':2.5,'stroke-linejoin':'round'}));const marker=element('circle',{r:6,fill:'#e6c58f',stroke:'currentColor','stroke-width':1});svg.append(marker);let buttons=[];const choose=i=>{const p=points[i];marker.setAttribute('cx',p.x);marker.setAttribute('cy',p.y);detail.textContent=p.date+' · '+p.id+' · '+money(p.value)+' sample net assets';buttons.forEach((b,j)=>b.setAttribute('aria-pressed',String(i===j)))};buttons=points.map((p,i)=>{const b=document.createElement('button');b.type='button';b.textContent=p.id;b.setAttribute('aria-label','Inspect '+p.id+' '+p.date);b.onclick=()=>choose(i);controls.append(b);return b});choose(points.length-1)}
+
+function mount(){const $=id=>document.getElementById(id);const make=(tag,v)=>{const n=document.createElement(tag);n.textContent=v;return n};const result=reconcile(JOURNAL);const analytics=portfolioAnalytics(result);$('allocation-largest').textContent=ACCOUNTS[analytics.largest.account]+' · '+analytics.largest.weight.toFixed(1)+'%';$('allocation-change').textContent=analytics.change.toFixed(3)+'%';$('allocation-expense').textContent=money(analytics.expense);$('net-assets').textContent=money(result.netAssets);$('debit').textContent=money(result.debit);$('credit').textContent=money(result.credit);$('reconcile').textContent=result.ok?'BALANCED · SAMPLE ONLY':'REVIEW REQUIRED';$('performance').textContent=money(result.netAssets-1000000)+' sample change since opening allocation; no live performance.';
+ for(const a of ['cash','btc','eth','reserve']){const v=result.balances[a],row=document.createElement('div');row.className='allocation-row';row.append(make('span',ACCOUNTS[a]),make('strong',money(v)+' · '+analytics.weights.find(w=>w.account===a).weight.toFixed(1)+'%'));const bar=document.createElement('progress');bar.max=result.netAssets;bar.value=v;bar.setAttribute('aria-label',ACCOUNTS[a]+' allocation');row.append(bar);$('allocations').append(row)}
+ for(const [a,label] of Object.entries(ACCOUNTS)){const opt=make('option',label);opt.value=a;$('account').append(opt)}
+ const render=()=>{const entries=filteredJournal($('search').value,$('account').value);const body=$('journal');body.replaceChildren();for(const e of entries)for(const [a,v] of e.lines){const row=document.createElement('tr');for(const cell of [e.id,e.date,e.memo,ACCOUNTS[a],v>0?money(v):'—',v<0?money(-v):'—'])row.append(make('td',cell));body.append(row)}$('entry-count').textContent=entries.length+' sample journals'};
+ $('search').oninput=render;$('account').onchange=render;$('export').onclick=()=>{const url=URL.createObjectURL(new Blob([csvStatement(filteredJournal($('search').value,$('account').value))],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='birrex-demo-ledger.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+ $('integrity-test').onclick=()=>{$('test-result').textContent=reconcile([...JOURNAL,{id:'LAB-TEST',lines:[['cash',100],['capital',-99]]}]).ok?'Unexpected result':'PASS: intentionally unbalanced sample rejected.'};
+ render();renderTimeline();try{document.documentElement.dataset.theme=localStorage.getItem('birrex.theme')==='light'?'light':'dark'}catch{}
+}
+if(typeof document!=='undefined')mount();

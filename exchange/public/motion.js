@@ -1,0 +1,34 @@
+'use strict';
+(function(){
+ const reduce=typeof matchMedia==='function'?matchMedia('(prefers-reduced-motion: reduce)'):null;
+ const reduced=()=>reduce?.matches||document.documentElement.dataset.motion==='reduced'||document.documentElement.dataset.lite==='yes';
+ const seen=new WeakSet();let observer=null,queued=false,progress=null,header=null,resize=null,raf=0,maxScroll=0;const animations=new Set();
+ const clampProgress=(top,scrollHeight,viewport)=>Math.min(1,Math.max(0,scrollHeight>viewport?top/(scrollHeight-viewport):0));
+ const measure=()=>{maxScroll=Math.max(0,document.documentElement.scrollHeight-window.innerHeight);onScroll()};const syncProgress=()=>{raf=0;if(progress)progress.value=maxScroll?Math.min(1,Math.max(0,(window.scrollY||0)/maxScroll)):0};
+ const onScroll=()=>{if(!raf)raf=requestAnimationFrame(syncProgress)};
+ function reveal(el){if(seen.has(el))return;seen.add(el);if(reduced()||typeof el.animate!=='function'||el.contains(document.activeElement)||el.querySelector('input,select,textarea,button,[contenteditable]'))return;const a=el.animate([{opacity:.9},{opacity:1}],{duration:160,easing:'cubic-bezier(.2,.75,.25,1)',fill:'none'});animations.add(a);a.onfinish=a.oncancel=()=>animations.delete(a)}
+ function scan(){queued=false;for(const el of document.querySelectorAll('.table-scroll')){if(el.scrollWidth>el.clientWidth){el.setAttribute('tabindex','0');el.setAttribute('role','region');if(!el.hasAttribute('aria-label'))el.setAttribute('aria-label','Scrollable table')}else if(el.getAttribute('aria-label')==='Scrollable table'){el.removeAttribute('tabindex');el.removeAttribute('role');el.removeAttribute('aria-label')}}const current=document.querySelector('.top');if(current!==header){if(resize&&header)resize.unobserve(header);header=current;if(header){progress=header.querySelector('.scroll-progress');if(!progress){progress=document.createElement('progress');progress.className='scroll-progress';progress.max=1;progress.value=0;progress.setAttribute('aria-hidden','true');header.append(progress)}if(resize)resize.observe(header)}else progress=null}
+ if(observer&&!reduced()){for(const el of document.querySelectorAll('main > .welcome, main > .panel, main > .grid > .panel, main > .institution-metrics > .panel, main > .lessons > .panel'))if(!seen.has(el))observer.observe(el)}measure()}
+ function queue(){if(!queued){queued=true;requestAnimationFrame(scan)}}
+ function begin(){try{document.documentElement.dataset.lite=localStorage.getItem('birrex.lite')==='yes'?'yes':'no';document.documentElement.dataset.motion=localStorage.getItem('birrex.motion')==='reduced'?'reduced':'normal'}catch{}if(typeof IntersectionObserver==='function'){observer=new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting){observer.unobserve(e.target);reveal(e.target)}},{threshold:.05,rootMargin:'0px 0px -8px 0px'})}
+ if(typeof ResizeObserver==='function')resize=new ResizeObserver(measure);if(resize)resize.observe(document.documentElement);
+ if(typeof MutationObserver==='function')new MutationObserver(records=>{if(records.some(r=>[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&(n.matches?.('main,.top,.panel,.welcome,.grid,.lessons,.institution-metrics')||n.querySelector?.('.panel,.top,main')))))queue()}).observe(document.body,{childList:true,subtree:true});
+ window.addEventListener('scroll',onScroll,{passive:true});window.addEventListener('resize',measure,{passive:true});
+ const change=()=>{if(reduced()){for(const a of animations)a.cancel();observer?.disconnect()}else queue()};window.addEventListener('birrex-motion',change);if(reduce?.addEventListener)reduce.addEventListener('change',change);else if(reduce?.addListener)reduce.addListener(change);
+ document.addEventListener('click',e=>{const target=e.target instanceof Element?e.target:null;const skip=target?.closest('a.skip');if(skip){const main=document.querySelector('main');if(main){e.preventDefault();main.setAttribute('tabindex','-1');main.focus({preventScroll:true});main.scrollIntoView({block:'start',behavior:'auto'})}}for(const m of document.querySelectorAll('.header-menu[open]'))if(!m.contains(target)||target?.closest('.header-menu-list a'))m.open=false});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'){for(const m of document.querySelectorAll('.header-menu[open]')){m.open=false;m.querySelector('summary')?.focus()}}});
+
+ const vv=window.visualViewport;let keyboardFrame=0;
+ const isEditing=el=>!!el&&(el.matches?.('textarea,[contenteditable="true"],input:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=submit]):not([type=range]):not([type=hidden])'));
+ const updateKeyboard=()=>{keyboardFrame=0;const editing=isEditing(document.activeElement);const open=vv?editing&&Math.abs((vv.scale||1)-1)<.05&&window.innerHeight-vv.height>140:editing&&window.innerWidth<=760;document.documentElement.dataset.keyboardOpen=open?'yes':'no'};
+ const queueKeyboard=()=>{if(!keyboardFrame)keyboardFrame=requestAnimationFrame(updateKeyboard)};
+ document.addEventListener('focusin',queueKeyboard);document.addEventListener('focusout',queueKeyboard);vv?.addEventListener('resize',queueKeyboard,{passive:true});window.addEventListener('resize',queueKeyboard,{passive:true});queueKeyboard();
+ scan();
+ const recovery=document.getElementById('load-recovery');if(recovery){const root=document.getElementById('root');const sync=()=>{if(!root?.querySelector('.app-skeleton'))recovery.hidden=true};if(root&&typeof MutationObserver==='function')new MutationObserver(sync).observe(root,{childList:true,subtree:true});setTimeout(()=>{recovery.hidden=!root?.querySelector('.app-skeleton')},8000)}
+ const banner=document.createElement('div');banner.className='connection-banner';banner.setAttribute('role','status');banner.hidden=true;document.body.append(banner);
+ function connection(){banner.hidden=navigator.onLine;banner.textContent=navigator.onLine?'':'Offline — cached educational content may be available. Market data requires a connection.'}
+ window.addEventListener('offline',connection);window.addEventListener('online',connection);connection();
+ if('serviceWorker' in navigator&&document.getElementById('root')){let previous=navigator.serviceWorker.controller;let offered=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!previous){previous=navigator.serviceWorker.controller;return}if(offered)return;offered=true;const box=document.createElement('div');box.className='update-banner';box.setAttribute('role','status');const label=document.createElement('span');label.textContent='A new BirrEX version is ready.';const button=document.createElement('button');button.type='button';button.textContent='Refresh';button.addEventListener('click',()=>location.reload());box.append(label,button);document.body.append(box)})}
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',begin,{once:true});else begin();
+})();

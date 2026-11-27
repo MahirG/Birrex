@@ -1,0 +1,2 @@
+# Genesis RC9
+Uniform icon geometry, compact inline actions, better section alignment and narrow mobile spacing, cleaner search results and notification heading. Explicitly label simulated market values and preserve distinct provider market terminal. Shared watchlist reads on storage and pageshow; write only on user toggle instead of mount. Footer and all required risk disclosures retained. Isolated checks do not substitute for real browser or device testing. No new paid dependencies or executable financial services.
