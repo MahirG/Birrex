@@ -17,6 +17,10 @@
  document.addEventListener('click',e=>{const target=e.target instanceof Element?e.target:null;const skip=target?.closest('a.skip');if(skip){const main=document.querySelector('main');if(main){e.preventDefault();main.setAttribute('tabindex','-1');main.focus({preventScroll:true});main.scrollIntoView({block:'start',behavior:'auto'})}}for(const m of document.querySelectorAll('.header-menu[open]'))if(!m.contains(target)||target?.closest('.header-menu-list a'))m.open=false});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'){for(const m of document.querySelectorAll('.header-menu[open]')){m.open=false;m.querySelector('summary')?.focus()}}});
  scan();
+ const banner=document.createElement('div');banner.className='connection-banner';banner.setAttribute('role','status');banner.hidden=true;document.body.append(banner);
+ function connection(){banner.hidden=navigator.onLine;banner.textContent=navigator.onLine?'':'Offline — cached educational content may be available. Market data requires a connection.'}
+ window.addEventListener('offline',connection);window.addEventListener('online',connection);connection();
+ if('serviceWorker' in navigator&&document.getElementById('root')){let previous=navigator.serviceWorker.controller;let offered=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!previous){previous=navigator.serviceWorker.controller;return}if(offered)return;offered=true;const box=document.createElement('div');box.className='update-banner';box.setAttribute('role','status');const label=document.createElement('span');label.textContent='A new BirrEX version is ready.';const button=document.createElement('button');button.type='button';button.textContent='Refresh';button.addEventListener('click',()=>location.reload());box.append(label,button);document.body.append(box)})}
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',begin,{once:true});else begin();
 })();

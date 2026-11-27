@@ -1,0 +1,2 @@
+# 0.9.3 Reliability Edition
+Read-only connection center with aggregate service health. No secrets or personal information exposed. Offline and service-worker update feedback; retained market view preferences; USD quote array compatibility; existing financial activity restrictions unchanged. Browser and actual provider response acceptance outstanding.
